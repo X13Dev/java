@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.server.dao.UserDAO">
+	<resultMap id="userResultMap" type="com.example.server.dataObject.User">
+		<id column="id" property="Id"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+	</resultMap>
+
+	<insert id="add" parameterType="com.example.server.dataObject.User">
+		insert into `user` (username, password, email)
+		values (#{username}, #{password}, #{email})
+	</insert>
+
+	<update id="update" parameterType="com.example.server.dataObject.User">
+		update `user`
+		set password=#{password}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultMap="userResultMap">
+		select id, username, email, password 
+		from `user`
+		where id = #{id}
+	</select>
+
+	<select id="getByUsername" resultMap="userResultMap">
+		select id, username, email, password 
+		from `user`
+		where username = #{username}
+	</select>
+
+    <select id="checkByUserName" resultMap="java.lang.Integer">
+        select count(1) 
+        from `user` 
+        where username = #{username}
+    </select>
+
+    <select id="checkByEmail" resultMap="java.lang.Integer"></select>
+</mapper>
