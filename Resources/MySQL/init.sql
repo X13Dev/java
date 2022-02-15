@@ -20,9 +20,21 @@ CREATE TABLE IF NOT EXISTS `user`(
 
 CREATE TABLE IF NOT EXISTS `board`(
     `id` INT(15) NOT NULL AUTO_INCREMENT COMMENT '标识Id',
-    `pid` INT(15) COMMENT '父级标识Id',
-    `uid` INT(15) NOT NULL COMMENT '用户标识Id',
+    `uid` INT(15) NOT NULL COMMENT '创建用户标识Id',
     `content` VARCHAR(200) NOT NULL COMMENT '用户留言',
     `creattime` DATETIME NOT NULL COMMENT '留言发表时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COMMENT='用户留言表';
+
+
+-- 初始化回复留言表
+
+CREATE TABLE IF NOT EXISTS `message`(
+    `id` INT(15) NOT NULL AUTO_INCREMENT COMMENT '标识Id',
+    `bid` INT(15) NOT NULL '留言标识Id'
+    `pid` INT(15) COMMENT '上一级回复标识Id',
+    `uid` INT(15) NOT NULL COMMENT '回复用户标识Id',
+    `content` VARCHAR(200) NOT NULL COMMENT '用户回复信息',
+    `creattime` DATETIME NOT NULL COMMENT '回复发表时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COMMENT='用户回复表';
