@@ -1,6 +1,7 @@
 package com.example.server.dataObject;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,4 +43,9 @@ public class Message {
      * 回复时间
      */
     private Date creattime;
+
+    /**
+     * 子评论
+     */
+    private List<Message> messages;
 }
