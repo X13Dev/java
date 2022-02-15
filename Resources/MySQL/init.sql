@@ -23,4 +23,6 @@ CREATE TABLE IF NOT EXISTS `board`(
     `pid` INT(15) COMMENT '父级标识Id',
     `uid` INT(15) NOT NULL COMMENT '用户标识Id',
     `content` VARCHAR(200) NOT NULL COMMENT '用户留言',
+    `creattime` DATETIME NOT NULL COMMENT '留言发表时间',
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4 COMMENT='用户留言表';
