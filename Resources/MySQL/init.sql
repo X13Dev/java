@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `board`(
 
 CREATE TABLE IF NOT EXISTS `message`(
     `id` INT(15) NOT NULL AUTO_INCREMENT COMMENT '标识Id',
-    `bid` INT(15) NOT NULL '留言标识Id'
+    `bid` INT(15) NOT NULL COMMENT '留言标识Id',
     `pid` INT(15) COMMENT '上一级回复标识Id',
     `uid` INT(15) NOT NULL COMMENT '回复用户标识Id',
     `content` VARCHAR(200) NOT NULL COMMENT '用户回复信息',
