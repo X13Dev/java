@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.server.dao.MessageDAO">
+
+    <!-- 新增回复 -->
+    <insert id="add" parameterType="com.example.server.dataObject.Message">
+        insert into `message` (bid, pid, uid, content, creattime)
+        values (#{bid}, #{pid}, #{uid}, #{content}, #{creattime})
+    </insert>
+
+    <!-- 根据留言标识查询回复信息 -->
+    <select id="searchMessageByBoardIds" parameterType="map" resultType="com.example.server.dataObject.Message">
+        select id, bid, pid, uid, content, creattime 
+        from `message`
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                id in
+                <foreach collection="ids" index="index" item="userId" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        order by `${params.orderBy}` asc
+    </select>
+
+    
+</mapper>

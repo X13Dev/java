@@ -3,7 +3,15 @@
 <mapper namespace="com.example.server.dao.BoardDAO">
 
     <insert id="add" parameterType="com.example.server.dataObject.Board">
-        insert into `Board` (pid, uid, content, creattime)
-        values (#{pid}, #{uid}, #{content}, #{creattime})
+        insert into `board` (uid, content, creattime)
+        values (#{uid}, #{content}, #{creattime})
     </insert>
+
+    <!-- 查询所有留言信息 -->
+    <select id="searchBoards" parameterType="map" resultType="com.example.server.dataObject.BoardFull">
+        select b.id, u.uid, u.username, b.content, b.creattime 
+        from `board` b 
+        left join `user` u on b.uid = u.id
+        order by b.creattime desc
+    </select>
 </mapper>

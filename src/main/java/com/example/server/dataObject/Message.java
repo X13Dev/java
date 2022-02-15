@@ -6,31 +6,40 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 /**
- * 留言板类
+ * 回复信息类
  */
 @Setter
 @Getter
 @NoArgsConstructor
-public class Board {
+public class Message {
     /**
-     * 留言板id
+     * 标识id
      */
     private Integer id;
 
     /**
-     * 用户id
+     * 留言标识id
+     */
+    private Integer bid;
+
+    /**
+     * 上一级回复标识Id
+     */
+    private Integer pid;
+
+    /**
+     * 回复用户标识Id
      */
     private Integer uid;
 
     /**
-     * 用户留言
+     * 用户回复信息
      */
     private String content;
 
     /**
-     * 留言时间
+     * 回复时间
      */
     private Date creattime;
 }
