@@ -10,7 +10,7 @@ use `server_base_dev`;
 CREATE TABLE IF NOT EXISTS `user`(
 	`id` INT(15) NOT NULL AUTO_INCREMENT COMMENT '标识Id',
 	`username` VARCHAR(20) NOT NULL COMMENT '用户账号',
-    `password` VARCHAR(20) NOT NULL COMMENT '登录密码',
+    `password` VARCHAR(500) NOT NULL COMMENT '登录密码',
     `email` VARCHAR(50) NOT NULL COMMENT '电子邮件',
     PRIMARY KEY (`id`),
 	INDEX `UserIndex` (`username` DESC)

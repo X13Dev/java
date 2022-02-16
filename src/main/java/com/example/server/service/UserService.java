@@ -43,5 +43,21 @@ public interface UserService {
 	 * @return 返回结果，若用户已登录则返回用户信息
 	 */
 	Result<User> isLogin(HttpSession session);
+
+	/**
+	 * 检查用户名是否存在
+	 * 
+	 * @param username 用户名
+	 * @return	存在:1 不存在:0
+	 */
+	int checkByUserName(String username);
+
+	/**
+	 * 检查邮箱是否存在
+	 * 
+	 * @param email 邮箱信息
+	 * @return 存在:1 不存在:0
+	 */
+	int checkByEmail(String email);
     
 }

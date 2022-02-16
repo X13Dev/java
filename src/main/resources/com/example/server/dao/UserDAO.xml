@@ -30,11 +30,15 @@
 		where username = #{username}
 	</select>
 
-    <select id="checkByUserName" resultMap="java.lang.Integer">
+    <select id="checkByUserName" resultType="java.lang.Integer">
         select count(1) 
         from `user` 
         where username = #{username}
     </select>
 
-    <select id="checkByEmail" resultMap="java.lang.Integer"></select>
+    <select id="checkByEmail" resultType="java.lang.Integer">
+		select count(1) 
+        from `user` 
+        where email = #{email}
+	</select>
 </mapper>

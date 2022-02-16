@@ -26,11 +26,19 @@ public class UserServiceImpl implements UserService {
 	public Result<User> register(User user) {
 		Result<User> result = new Result<>();
 		// 先去数据库找用户名是否存在
-		User getUser = userDAO.getByUsername(user.getUsername());
-		if (getUser != null) {
+		int nameResult = userDAO.checkByUserName(user.getUsername());
+		if (nameResult == 1) {
 			result.setResultFailed("该用户名已存在！");
 			return result;
 		}
+
+		// 检查用户邮箱是否已经存在
+		int emailResult = userDAO.checkByEmail(user.getEmail());
+		if (emailResult == 1) {
+			result.setResultFailed("该邮箱已存在！");
+			return result;
+		}
+
 		// 加密储存用户的密码
 		user.setPassword(DigestUtils.md5Hex(user.getPassword()));
 		// 存入数据库
@@ -100,6 +108,18 @@ public class UserServiceImpl implements UserService {
 		}
 		result.setResultSuccess("用户已登录！", getUser);
 		return result;
+	}
+
+	@Override
+	public int checkByUserName(String username) {
+		int nameResult = userDAO.checkByUserName(username);
+		return nameResult;
+	}
+
+	@Override
+	public int checkByEmail(String email) {
+		int emailResult = userDAO.checkByEmail(email);
+		return emailResult;
 	}
 
 }

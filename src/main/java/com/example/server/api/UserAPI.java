@@ -1,8 +1,14 @@
 package com.example.server.api;
 
 import com.example.server.dataObject.User;
+import com.example.server.error.ServerBusinessException;
+import com.example.server.error.ServerErrorTypeEnum;
+import com.example.server.error.ServerException;
 import com.example.server.model.Result;
 import com.example.server.service.UserService;
+import com.example.server.util.RegexUtils;
+import com.example.server.util.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +40,75 @@ public class UserAPI {
      * @return 注册结果
      */
     @PostMapping("/register")
-    public Result<User> register(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) {
+    public Result<User> register(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) throws ServerException {
         Result<User> result;
-        // 如果校验有错，返回注册失败以及错误信息
-        if (errors.hasErrors()) {
-            result = new Result<>();
-            result.setResultFailed(errors.getFieldError().getDefaultMessage());
-            return result;
+        if(user == null) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_ERROR);
         }
+
+        // 用户名校验 5-20且只能为数字和字母且唯一
+        if(StringUtils.stringIsEmptyOrNull(user.getUsername())) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_NULL_ERROR);
+        }
+
+        String strUsername = user.getUsername(); 
+        if(strUsername.length() < 5 || strUsername.length() > 20) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_LENGTH_ERROR);
+        }
+
+        String regexUN = "^[a-z0-9A-Z]+$";
+        boolean nameRegex = RegexUtils.genericMatcher(regexUN, strUsername);
+        if(!nameRegex){
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_FORMAT_ERROR);
+        }
+
+        int checkUN = userService.checkByUserName(strUsername);
+        if(checkUN == 1) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_UNIQUE_ERROR);
+        }
+
+        // 密码校验 8-20 至少包含一个大写、一个小写、一个数字、一个特殊符号
+        if(StringUtils.stringIsEmptyOrNull(user.getPassword())) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_NULL_ERROR);
+        }
+
+        String pwd = user.getPassword();
+        if(pwd.length() <8 || pwd.length() > 20){
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_LENGTH_ERROR);
+
+        }
+
+        String regexPWD = "^(?![A-z0-9]+$)(?=.[^%&',;=?$\\x22])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,20}$";
+        boolean pwdRegex = RegexUtils.genericMatcher(regexPWD, pwd);
+        if(!pwdRegex){
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_FORMAT_ERROR);
+
+        }
+
+        // 邮箱校验 
+        if(StringUtils.stringIsEmptyOrNull(user.getEmail())) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAIL_NULL_ERROR);
+        }
+
+        String strEmail = user.getEmail();
+        String regexEmail = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        boolean emailRegex = RegexUtils.genericMatcher(regexEmail, strEmail);
+        if(!emailRegex){
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAIL_FORMAT_ERROR);
+        }
+
+        int checkEmail = userService.checkByEmail(strEmail);
+        if(checkEmail == 1) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAI_UNIQUE_ERROR);
+        }
+       
+        // 写的有问题暂时不用
+        // // 如果校验有错，返回登录失败以及错误信息 
+        // if (errors.hasErrors()) {
+        //     result = new Result<>();
+        //     result.setResultFailed(errors.getFieldError().getDefaultMessage());
+        //     return result;
+        // }
         // 调用注册服务
         result = userService.register(user);
         // 如果注册成功，则设定session
@@ -60,14 +127,25 @@ public class UserAPI {
      * @return 登录结果
      */
     @PostMapping("/login")
-    public Result<User> login(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) {
+    public Result<User> login(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) throws ServerException{
         Result<User> result;
-        // 如果校验有错，返回登录失败以及错误信息
-        if (errors.hasErrors()) {
-            result = new Result<>();
-            result.setResultFailed(errors.getFieldError().getDefaultMessage());
-            return result;
+
+        if(user == null) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_ERROR);
         }
+
+        String username = user.getUsername();
+        String email = user.getEmail();
+        if(StringUtils.stringIsEmptyOrNull(username) && StringUtils.stringIsEmptyOrNull(email)) {
+            throw new ServerBusinessException(ServerErrorTypeEnum.USER_USERNAMEEMAIL_NULL_ERROR);
+        }
+        // 写的有问题暂时不用
+        // // 如果校验有错，返回登录失败以及错误信息
+        // if (errors.hasErrors()) {
+        //     result = new Result<>();
+        //     result.setResultFailed(errors.getFieldError().getDefaultMessage());
+        //     return result;
+        // }
         // 调用登录服务
         result = userService.login(user);
         // 如果登录成功，则设定session
