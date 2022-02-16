@@ -49,21 +49,45 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public Result<Message> addMessage(Message message) {
+        Result<Message> result = new Result<>();
+        Date date = new Date();
+        message.setCreattime(date);
+
+        //存入数据库
+        Integer flag = messageDAO.add(message);
+        if (flag > 0) {
+            result.setResultSuccess("回复成功", message);
+        } else {
+            result.setResultFailed("回复失败");
+        }
+        
+        return result;
+    }
+
+    @Override
     public Result<List<BoardFull>> searchBoardTree(Board board) {
         Result<List<BoardFull>> result = new Result<>();
         List<BoardFull> boards = boardDAO.searchBoards();
-        result.setResultSuccess("成功", boards);
         if (CollectionUtils.isEmpty(boards)) {
+            result.setResultSuccess("留言板为空", boards);
             return result;
         }
-        //留言ids预留分页时适用，无需全量查询
+
+        // 留言ids预留分页时适用，无需全量查询
         List<Message> messages = messageDAO.searchMessageByBoardIds(null);
         if (CollectionUtils.isEmpty(messages)) {
+            // 如果回复为空则直接返回留言板
+            result.setResultSuccess("回复为空", boards);
             return result;
         }
+        // 不为空则遍历并将信息写入到留言板集合中
         boards.forEach(info -> {
             info.setMessages(this.getChilden(info.getId(), messages));
         });
+
+        result.setResultSuccess("查询成功", boards);
+
         return result;
     }
 
@@ -91,5 +115,7 @@ public class BoardServiceImpl implements BoardService {
         }
         return thisChildenList;
     }
+
+    
 
 }

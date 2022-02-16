@@ -2,6 +2,7 @@ package com.example.server.service;
 
 import com.example.server.dataObject.Board;
 import com.example.server.dataObject.BoardFull;
+import com.example.server.dataObject.Message;
 import com.example.server.model.Result;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,8 @@ public interface BoardService {
     /**
      * 新增用户留言
      *
-     * @param board
-     * @return
+     * @param board 留言对象
+     * @return 是否新增成功
      */
     Result<Board> add(Board board);
 
@@ -28,4 +29,12 @@ public interface BoardService {
      * @return
      */
     Result<List<BoardFull>> searchBoardTree(Board board);
+
+    /**
+     * 新增回复
+     * 
+     * @param message 回复对象
+     * @return 是否新增成功
+     */
+    Result<Message> addMessage(Message message);
 }

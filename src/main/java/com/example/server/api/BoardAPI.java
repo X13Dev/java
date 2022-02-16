@@ -14,11 +14,9 @@ import com.example.server.service.BoardService;
 import com.example.server.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -88,14 +86,14 @@ public class BoardAPI {
     }
 
     /**
-     * 新增回复
+     * 新增回复（部分内容可以和留言共用，后期待修改）
      * 
      * @param messge 回复对象
      * @param request session校验
      * @return 回复是否新增成功
      * @throws ServerBusinessException 异常处理
      */
-    @PostMapping("/Board/NewMessage")
+    @PostMapping("/newmessage/add")
     public Result<Message> addMessage(@RequestBody @Valid Message messge, HttpServletRequest request) throws ServerBusinessException {
         Result<Message> result;
         // 校验当前用户是否登录
@@ -104,6 +102,32 @@ public class BoardAPI {
             result.setResultFailed(ServerErrorTypeEnum.USER_ISLOGIN_ERROR.getErrorDesc());
             return result;
         }
+
+        Result<User> isLoginResult = userService.isLogin(request.getSession());
+        if(isLoginResult == null) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_ISLOGIN_ERROR.getErrorDesc());
+            return result;
+        }
+
+        // 校验回复信息
+        if (messge == null) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.BOARD_NULL_ERROR.getErrorDesc());
+            return result;
+        }
+
+        // 校验回复信息长度
+        if(messge.getContent() != null) {
+            int length = messge.getContent().length();
+            if( length < 3 || length > 200) {
+                result = new Result<>();
+                result.setResultFailed(ServerErrorTypeEnum.BOARD_NAME_LENGTH_ERROR.getErrorDesc());
+                return result;
+            }
+        }
+
+        
 
         return null;
     }
