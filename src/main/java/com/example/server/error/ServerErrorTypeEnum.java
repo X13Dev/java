@@ -24,7 +24,15 @@ public enum ServerErrorTypeEnum {
     
     USER_EMAI_UNIQUE_ERROR(1000011, "邮箱已存在！"),
 
-    USER_USERNAMEEMAIL_NULL_ERROR(1000012, "登录时账号密码必须输入一个");
+    USER_USERNAMEEMAIL_NULL_ERROR(1000012, "登录时账号密码必须输入一个"),
+
+    USER_ISLOGIN_ERROR(1000013, "用户需要登录！"),
+
+    BOARD_NULL_ERROR(2000001, "信息不能为空"),
+
+    BOARD_NAME_LENGTH_ERROR(2000002, "信息长度在3-200个字符");
+
+
 
 
     /**
@@ -64,10 +72,20 @@ public enum ServerErrorTypeEnum {
         return null;
     }
 
+    /**
+     * 获取错误编码
+     * 
+     * @return
+     */
     public int getErrorCode() {
         return errorCode;
     }
 
+    /**
+     * 获取错误信息
+     * 
+     * @return
+     */
     public String getErrorDesc() {
         return errorDesc;
     }

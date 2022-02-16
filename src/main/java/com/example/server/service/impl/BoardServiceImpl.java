@@ -29,8 +29,8 @@ public class BoardServiceImpl implements BoardService {
     private MessageDAO messageDAO;
 
     @Override
-    public Result<Integer> add(Board board) {
-        Result<Integer> result = new Result<>();
+    public Result<Board> add(Board board) {
+        Result<Board> result = new Result<>();
         // 时间问题要考虑到时间戳处理。暂时用系统时间记录
         // 取出时候需要转换格式
         Date date = new Date();
@@ -40,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
         Integer flag = boardDAO.add(board);
         // 返回存储结果
         if (flag > 0) {
-            result.setResultSuccess("留言成功！", flag);
+            result.setResultSuccess("留言成功！", board);
         } else {
             result.setResultFailed("留言失败！");
         }

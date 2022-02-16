@@ -19,7 +19,7 @@ public interface BoardService {
      * @param board
      * @return
      */
-    Result<Integer> add(Board board);
+    Result<Board> add(Board board);
 
     /**
      * 查询留言列表

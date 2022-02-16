@@ -1,7 +1,6 @@
 package com.example.server.api;
 
 import com.example.server.dataObject.User;
-import com.example.server.error.ServerBusinessException;
 import com.example.server.error.ServerErrorTypeEnum;
 import com.example.server.error.ServerException;
 import com.example.server.model.Result;
@@ -42,64 +41,85 @@ public class UserAPI {
     @PostMapping("/register")
     public Result<User> register(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) throws ServerException {
         Result<User> result;
-        if(user == null) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_ERROR);
+        if (user == null) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_ERROR.getErrorDesc());
+            return result;
         }
 
         // 用户名校验 5-20且只能为数字和字母且唯一
-        if(StringUtils.stringIsEmptyOrNull(user.getUsername())) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_NULL_ERROR);
+        if (StringUtils.stringIsEmptyOrNull(user.getUsername())) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_NAME_NULL_ERROR.getErrorDesc());
+            return result;
         }
 
         String strUsername = user.getUsername(); 
-        if(strUsername.length() < 5 || strUsername.length() > 20) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_LENGTH_ERROR);
+        if (strUsername.length() < 5 || strUsername.length() > 20) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_NAME_LENGTH_ERROR.getErrorDesc());
+            return result;
         }
 
         String regexUN = "^[a-z0-9A-Z]+$";
         boolean nameRegex = RegexUtils.genericMatcher(regexUN, strUsername);
-        if(!nameRegex){
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_FORMAT_ERROR);
+        if (!nameRegex){
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_NAME_FORMAT_ERROR.getErrorDesc());
+            return result;
         }
 
         int checkUN = userService.checkByUserName(strUsername);
-        if(checkUN == 1) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_NAME_UNIQUE_ERROR);
+        if (checkUN == 1) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_NAME_UNIQUE_ERROR.getErrorDesc());
+            return result;
         }
 
         // 密码校验 8-20 至少包含一个大写、一个小写、一个数字、一个特殊符号
-        if(StringUtils.stringIsEmptyOrNull(user.getPassword())) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_NULL_ERROR);
+        if (StringUtils.stringIsEmptyOrNull(user.getPassword())) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_PWD_NULL_ERROR.getErrorDesc());
+            return result;
         }
 
         String pwd = user.getPassword();
-        if(pwd.length() <8 || pwd.length() > 20){
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_LENGTH_ERROR);
+        if (pwd.length() <8 || pwd.length() > 20){
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_PWD_LENGTH_ERROR.getErrorDesc());
+            return result;
 
         }
 
         String regexPWD = "^(?![A-z0-9]+$)(?=.[^%&',;=?$\\x22])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,20}$";
         boolean pwdRegex = RegexUtils.genericMatcher(regexPWD, pwd);
-        if(!pwdRegex){
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_PWD_FORMAT_ERROR);
-
+        if (!pwdRegex){
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_PWD_FORMAT_ERROR.getErrorDesc());
+            return result;
         }
 
         // 邮箱校验 
-        if(StringUtils.stringIsEmptyOrNull(user.getEmail())) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAIL_NULL_ERROR);
+        if (StringUtils.stringIsEmptyOrNull(user.getEmail())) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_EMAIL_NULL_ERROR.getErrorDesc());
+            return result;
         }
 
         String strEmail = user.getEmail();
         String regexEmail = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
         boolean emailRegex = RegexUtils.genericMatcher(regexEmail, strEmail);
-        if(!emailRegex){
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAIL_FORMAT_ERROR);
+        if (!emailRegex){
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_EMAIL_FORMAT_ERROR.getErrorDesc());
+            return result;
         }
 
         int checkEmail = userService.checkByEmail(strEmail);
-        if(checkEmail == 1) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_EMAI_UNIQUE_ERROR);
+        if (checkEmail == 1) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_EMAI_UNIQUE_ERROR.getErrorDesc());
+            return result;
         }
        
         // 写的有问题暂时不用
@@ -130,14 +150,25 @@ public class UserAPI {
     public Result<User> login(@RequestBody @Valid User user, BindingResult errors, HttpServletRequest request) throws ServerException{
         Result<User> result;
 
-        if(user == null) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_ERROR);
+        if (user == null) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_ERROR.getErrorDesc());
+            return result;
         }
 
         String username = user.getUsername();
         String email = user.getEmail();
-        if(StringUtils.stringIsEmptyOrNull(username) && StringUtils.stringIsEmptyOrNull(email)) {
-            throw new ServerBusinessException(ServerErrorTypeEnum.USER_USERNAMEEMAIL_NULL_ERROR);
+        String pwd = user.getPassword();
+        if (StringUtils.stringIsEmptyOrNull(username) && StringUtils.stringIsEmptyOrNull(email)) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_USERNAMEEMAIL_NULL_ERROR.getErrorDesc());
+            return result;
+        }
+
+        if (StringUtils.stringIsEmptyOrNull(pwd)) {
+            result = new Result<>();
+            result.setResultFailed(ServerErrorTypeEnum.USER_PWD_NULL_ERROR.getErrorDesc());
+            return result;
         }
         // 写的有问题暂时不用
         // // 如果校验有错，返回登录失败以及错误信息
